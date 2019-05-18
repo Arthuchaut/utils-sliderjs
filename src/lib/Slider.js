@@ -33,10 +33,16 @@ export default class Slider {
                 scrollable.style.userSelect = 'none';
 
                 window.onmousemove = e2 => {
-                    let scrollTo = e2.pageY - scrollable.offsetTop - e.layerY;
-
-                    if (scrollTo >= 0 && scrollTo <= scrollable.clientHeight - slider.stick.clientHeight)
-                        slider.stick.style.top = scrollTo + 'px';
+                    let stickScrollTo = e2.pageY - scrollable.offsetTop - e.layerY;
+                    
+                    if (stickScrollTo >= 0 && stickScrollTo <= scrollable.clientHeight - slider.stick.clientHeight) {
+                        let stickPer = (100 * stickScrollTo) / scrollable.clientHeight;
+                        let scrollableScrollTo = ((scrollable.scrollHeight - scrollable.clientHeight) / 100) * stickPer;
+                        
+                        slider.scrollbar.style.top = scrollableScrollTo + 'px';
+                        slider.stick.style.top = stickScrollTo + 'px';
+                        scrollable.scrollTop = scrollableScrollTo;
+                    }
                 };
             };
 
@@ -44,6 +50,9 @@ export default class Slider {
                 scrollable.style.userSelect = 'initial';
                 window.onmousemove = null
             };
+
+            slider.stick.onmouseenter = e => slider.stick.style.opacity = 0.8;
+            slider.stick.onmouseleave = e => slider.stick.style.opacity = 1;
         }
     }
 
@@ -75,6 +84,7 @@ export default class Slider {
         stick.style.boxShadow = '1px 1px 5px #00000055';
         stick.style.borderRadius = this.width + 'px';
         stick.style.cursor = 'pointer';
+        // stick.style.transition = '0.05s';
 
         scrollbar.appendChild(stick);
 
